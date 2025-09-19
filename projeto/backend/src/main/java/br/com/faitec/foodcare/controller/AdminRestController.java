@@ -60,7 +60,7 @@ public class AdminRestController {
     @GetMapping("/users/donors")
     public ResponseEntity<List<UserModel>> getDonors() {
         List<UserModel> users = userService.findAll().stream()
-                .filter(user -> user.getUserType() == UserModel.UserType.donor)
+                .filter(user -> user.getUserType() == UserModel.UserType.DONOR)
                 .toList();
         return ResponseEntity.ok(users);
     }
@@ -68,7 +68,7 @@ public class AdminRestController {
     @GetMapping("/users/beneficiaries")
     public ResponseEntity<List<UserModel>> getBeneficiaries() {
         List<UserModel> users = userService.findAll().stream()
-                .filter(user -> user.getUserType() == UserModel.UserType.beneficiary)
+                .filter(user -> user.getUserType() == UserModel.UserType.BENEFICIARY)
                 .toList();
         return ResponseEntity.ok(users);
     }

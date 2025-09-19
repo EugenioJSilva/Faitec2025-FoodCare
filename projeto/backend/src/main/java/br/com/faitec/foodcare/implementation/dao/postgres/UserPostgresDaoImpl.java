@@ -314,7 +314,9 @@ public class UserPostgresDaoImpl implements UserDao {
         user.setEmail(resultSet.getString("email"));
         user.setPassword(resultSet.getString("password"));
         user.setPhone(resultSet.getString("phone"));
-        user.setUserType(UserModel.UserType.valueOf(resultSet.getString("user_type")));
+        String userTypeStr = resultSet.getString("user_type");
+        // Converter para maiúsculo para compatibilidade
+        user.setUserType(UserModel.UserType.valueOf(userTypeStr.toUpperCase()));
         user.setFamilyIncome(resultSet.getDouble("family_income"));
         user.setPeopleQuantity(resultSet.getInt("people_quantity"));
         user.setMunicipalityId(resultSet.getInt("municipality_id"));

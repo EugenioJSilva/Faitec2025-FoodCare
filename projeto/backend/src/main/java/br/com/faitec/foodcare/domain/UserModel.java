@@ -26,8 +26,8 @@ public class UserModel {
     private Boolean able;
     
     public enum UserType {
-        donor,
-        beneficiary,
-        admin
+        DONOR,
+        BENEFICIARY,
+        ADMIN
     }
 }

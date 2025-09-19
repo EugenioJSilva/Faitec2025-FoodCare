@@ -92,7 +92,7 @@ public class UserRestController {
         try {
             UserModel user = new com.fasterxml.jackson.databind.ObjectMapper().readValue(userJson, UserModel.class);
             
-            if (user.getUserType() == UserModel.UserType.beneficiary) {
+            if (user.getUserType() == UserModel.UserType.BENEFICIARY) {
                 if (documents != null && !documents.isEmpty()) {
                     List<String> documentPaths = fileStorageService.storeFiles(documents, "documents");
                     user.setDocuments(documentPaths);
@@ -192,7 +192,7 @@ public class UserRestController {
     
     @GetMapping("/beneficiaries")
     public ResponseEntity<List<UserResponseDto>> getBeneficiaries() {
-        List<UserModel> beneficiaries = userService.findByUserType(UserModel.UserType.beneficiary);
+        List<UserModel> beneficiaries = userService.findByUserType(UserModel.UserType.BENEFICIARY);
         List<UserResponseDto> response = beneficiaries.stream()
                 .map(UserResponseDto::fromUserModel)
                 .toList();

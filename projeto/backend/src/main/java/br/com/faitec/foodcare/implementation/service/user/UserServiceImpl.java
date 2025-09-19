@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
         }
         
         // Definir able = false como padrão para beneficiários
-        if (entity.getUserType() == UserModel.UserType.beneficiary && entity.getAble() == null) {
+        if (entity.getUserType() == UserModel.UserType.BENEFICIARY && entity.getAble() == null) {
             entity.setAble(false);
         }
         
@@ -126,7 +126,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean updateAbleStatus(int userId, Boolean able) {
         UserModel user = findById(userId);
-        if (user == null || user.getUserType() != UserModel.UserType.beneficiary) {
+        if (user == null || user.getUserType() != UserModel.UserType.BENEFICIARY) {
             return false;
         }
         return userDao.updateAbleStatus(userId, able);
