@@ -121,20 +121,34 @@ export class SignInComponent{
 
     this.authenticationService.authenticate(credentials)
       .subscribe({
-        next: (user: User) => {
-          console.log('Resultado da busca no backend:', user);
-          console.log('user.userType:', user.userType);
-          console.log('user.userType:', user.userType);
-          console.log('Tipo de usuário final:', user.userType || user.userType);
+        next: (value: any) => {
 
-          // Armazena dados do usuário no localStorage
-          this.authenticationService.addDataToLocalStorage(user);
+          const token = value.token;
+          console.log(token);
+
+          const payload = token.split('.')[1];
+          console.log(payload);
+
+          const decodedPayload = atob(payload);
+          const decoded = JSON.parse(decodedPayload);
+          console.log(decoded);
           
-          const userType = user.userType;
+          const email = decoded.sub;
+          const name = decoded.name;
+          const user_type = decoded.user_type;
+
+          this.authenticationService.addDataToLocalStorage(
+            email,
+            name,
+            token,
+            user_type
+          );
+          
+          const userType = value.userType;
           console.log('UserType processado:', userType);
           
           // Redireciona baseado no tipo de usuário
-          if (userType === 'admin' || user.userType === 'admin') {
+          if (userType === 'admin' || value.userType === 'admin') {
             console.log('Usuário identificado como administrador');
             this.router.navigate(['/main/admin/dashboard']);
           } else if (userType === 'donor') {
@@ -143,11 +157,11 @@ export class SignInComponent{
           } else if (userType === 'beneficiary') {
             console.log('Usuário identificado como beneficiário');
             // Verifica elegibilidade do beneficiário
-            if (user.able === false) {
+            if (value.able === false) {
               this.toastr.warning('Você não está apto a receber o auxílio.');
               return;
             }
-            if (user.able === undefined) {
+            if (value.able === undefined) {
               this.toastr.info('Estamos verificando sua elegibilidade.');
               return;
             }

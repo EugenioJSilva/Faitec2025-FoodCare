@@ -43,11 +43,12 @@ export class AuthenticationService {
   }
 
   /** Armazena dados do usuário no localStorage para persistência de sessão */
-  addDataToLocalStorage(user: User): void {
-    console.log('Armazenando dados completos do usuário no localStorage...');
-    if (typeof localStorage !== 'undefined') {
-      localStorage.setItem('user', JSON.stringify(user));
-    }
+  addDataToLocalStorage(email: string, name: string, token: string, userType: string): void {
+    console.log('adicionando dados no cache...');
+    localStorage.setItem('email', email);
+    localStorage.setItem('fullname', name);
+    localStorage.setItem('token', token);
+    localStorage.setItem('userType', userType);
   }
 
   /** Verifica se o usuário está autenticado */
