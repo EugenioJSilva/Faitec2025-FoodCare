@@ -17,6 +17,7 @@ import { CommonModule } from '@angular/common';
 import * as fontawesome from '@fortawesome/free-solid-svg-icons'
 import { AuthenticationService } from '../../../services/security/authentication.service';
 import { User } from '../../../domain/model/user';
+import { UserCredentialDto } from '../../../domain/dto/user-credential-dto';
 import { UserCreateService } from '../../../services/user/user-create.service';
 import { MunicipalityCreateService } from '../../../services/municipality/municipality-create.service';
 import { environment } from '../../../../environments/environment.development';
@@ -452,12 +453,42 @@ export class SignUpComponent implements OnInit {
         this.router.navigate(['/account/sign-in']);
       } else {
         // Login automático para doadores e admins
-        this.authenticationService.addDataToLocalStorage(createdUser);
-        if (createdUser.userType === 'admin') {
-          this.router.navigate(['/main/admin/dashboard']);
-        } else {
-          this.router.navigate(['/main']);
-        }
+        const credentials: UserCredentialDto = {
+          email: createdUser.email,
+          password: formDataSignUp.password
+        };
+
+        this.authenticationService.authenticate(credentials)
+          .subscribe({
+            next: (value: any) => {
+              const token = value.token;
+              const payload = token.split('.')[1];
+              const decodedPayload = atob(payload);
+              const decoded = JSON.parse(decodedPayload);
+              
+              const email = decoded.sub;
+              const name = decoded.name;
+              const user_type = decoded.user_type;
+
+              this.authenticationService.addDataToLocalStorage(
+                email,
+                name,
+                token,
+                user_type
+              );
+
+              if (createdUser.userType === 'admin') {
+                this.router.navigate(['/main/admin/dashboard']);
+              } else {
+                this.router.navigate(['/main']);
+              }
+            },
+            error: (err) => {
+              console.error('Erro no login automático:', err);
+              this.toastr.error('Conta criada, mas erro no login automático. Faça login manualmente.');
+              this.router.navigate(['/account/sign-in']);
+            }
+          });
       }
     }catch(error){
       console.error("erro ao criar usuario ou municipality:", error);

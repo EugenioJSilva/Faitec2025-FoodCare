@@ -53,7 +53,12 @@ export class MyProfileComponent implements OnInit {
         // Busca dados atualizados do usuário no servidor
         this.user = await this.userReadService.findById(currentUser.id.toString());
         // Atualiza o localStorage com os dados mais recentes
-        this.authenticationService.addDataToLocalStorage(this.user);
+        this.authenticationService.addDataToLocalStorage(
+          this.user.email,
+          this.user.name,
+          localStorage.getItem('token') || '',
+          this.user.userType
+        );
         
         // Busca dados do município do usuário
         const municipalityId = this.user?.municipalityId || this.user?.municipalityId;
