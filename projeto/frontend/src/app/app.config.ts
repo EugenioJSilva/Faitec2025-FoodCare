@@ -6,17 +6,24 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 import { LOCALE_ID } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+
 
 registerLocaleData(localePt);
 
 
 import { routes } from './app.routes';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { AuthInterceptor } from './services/security/interceptor/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
 
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass:  AuthInterceptor,
+      multi: true
+    },
     provideRouter(routes),
     provideAnimationsAsync(),  
     provideHttpClient(withInterceptorsFromDi()),

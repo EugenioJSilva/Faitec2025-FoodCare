@@ -4,6 +4,7 @@ import { Observable, map } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../environments/environment.development';
 import { User } from '../../domain/model/user';
+import { AuthenticatedUserDto } from '../../domain/dto/authenticated-user-dto';
 
 /**
  * Serviço de autenticação do frontend.
@@ -66,6 +67,26 @@ export class AuthenticationService {
     }
     const userJson = localStorage.getItem('user');
     return userJson ? JSON.parse(userJson) as User : null;
+  }
+
+    getAuthenticateUser(): AuthenticatedUserDto{
+    let email = localStorage.getItem('email');
+    let name = localStorage.getItem('name');
+    let token = localStorage.getItem('token');
+    let userType = localStorage.getItem('userType');
+    
+    if(email == null  || name == null || token == null ||userType == null) {
+      throw new Error('Dados invalidos');
+    }
+
+    let user: AuthenticatedUserDto = {
+      email: email,
+      name: name,
+      token: token,
+      userType: userType,
+    };
+
+    return user;
   }
 
   /** Remove dados do usuário e encerra sessão */
