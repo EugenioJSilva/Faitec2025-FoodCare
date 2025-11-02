@@ -123,24 +123,36 @@ export class SignInComponent{
       .subscribe({
         next: (value: any) => {
 
-          const token = value.token;
-          console.log(token);
+          const token = value?.token;
+          console.log('Token recebido:', token);
 
-          const payload = token.split('.')[1];
-          console.log(payload);
-
-          const decodedPayload = atob(payload);
-          const decoded = JSON.parse(decodedPayload);
-          console.log(decoded);
+          let email, name, user_type;
           
-          const email = decoded.sub;
-          const name = decoded.name;
-          const user_type = decoded.user_type;
+          if (token) {
+            try {
+              const payload = token.split('.')[1];
+              const decodedPayload = atob(payload);
+              const decoded = JSON.parse(decodedPayload);
+              email = decoded.sub;
+              name = decoded.name;
+              user_type = decoded.user_type;
+            } catch (tokenError) {
+              console.error('Erro ao processar token:', tokenError);
+              email = value.email;
+              name = value.name;
+              user_type = value.userType;
+            }
+          } else {
+            // Usar dados do usuário da resposta
+            email = value.email;
+            name = value.name;
+            user_type = value.userType;
+          }
 
           this.authenticationService.addDataToLocalStorage(
             email,
             name,
-            token,
+            token || '',
             user_type
           );
           
@@ -170,7 +182,7 @@ export class SignInComponent{
             console.log('Tipo de usuário não reconhecido:', userType);
             this.router.navigate(['/main']);
           }
-      },
+        },
       error: (err) => {
         console.error('Erro ao tentar autenticar no servidor:', err);
         console.log('Detalhes do erro:', err.error);

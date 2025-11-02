@@ -57,7 +57,7 @@ export class AuthenticationService {
     if (typeof localStorage === 'undefined') {
       return false;
     }
-    return localStorage.getItem('user') !== null;
+    return localStorage.getItem('email') !== null && localStorage.getItem('userType') !== null;
   }
 
   /** Recupera dados do usuário atual do localStorage */
@@ -65,8 +65,19 @@ export class AuthenticationService {
     if (typeof localStorage === 'undefined') {
       return null;
     }
-    const userJson = localStorage.getItem('user');
-    return userJson ? JSON.parse(userJson) as User : null;
+    const email = localStorage.getItem('email');
+    const name = localStorage.getItem('fullname');
+    const userType = localStorage.getItem('userType');
+    
+    if (!email || !userType) {
+      return null;
+    }
+    
+    return {
+      email: email,
+      name: name || '',
+      userType: userType
+    } as User;
   }
 
     getAuthenticateUser(): AuthenticatedUserDto{
@@ -92,7 +103,10 @@ export class AuthenticationService {
   /** Remove dados do usuário e encerra sessão */
   logout(): void {
     if (typeof localStorage !== 'undefined') {
-      localStorage.removeItem('user');
+      localStorage.removeItem('email');
+      localStorage.removeItem('fullname');
+      localStorage.removeItem('token');
+      localStorage.removeItem('userType');
     }
   }
 

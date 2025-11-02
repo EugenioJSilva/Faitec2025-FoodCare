@@ -461,19 +461,35 @@ export class SignUpComponent implements OnInit {
         this.authenticationService.authenticate(credentials)
           .subscribe({
             next: (value: any) => {
-              const token = value.token;
-              const payload = token.split('.')[1];
-              const decodedPayload = atob(payload);
-              const decoded = JSON.parse(decodedPayload);
+              const token = value?.token;
               
-              const email = decoded.sub;
-              const name = decoded.name;
-              const user_type = decoded.user_type;
+              let email, name, user_type;
+              
+              if (token) {
+                try {
+                  const payload = token.split('.')[1];
+                  const decodedPayload = atob(payload);
+                  const decoded = JSON.parse(decodedPayload);
+                  email = decoded.sub;
+                  name = decoded.name;
+                  user_type = decoded.user_type;
+                } catch (tokenError) {
+                  console.error('Erro ao processar token:', tokenError);
+                  email = value.email;
+                  name = value.name;
+                  user_type = value.userType;
+                }
+              } else {
+                // Usar dados do usuário da resposta
+                email = value.email;
+                name = value.name;
+                user_type = value.userType;
+              }
 
               this.authenticationService.addDataToLocalStorage(
                 email,
                 name,
-                token,
+                token || '',
                 user_type
               );
 
